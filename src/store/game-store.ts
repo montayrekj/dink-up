@@ -11,26 +11,17 @@ interface GameState {
   scoringMode: ScoringMode;
   team1Name: string;
   team2Name: string;
-  /** Indexed 0-3: [T1P1, T1P2, T2P1, T2P2] */
   playerNames: [string, string, string, string];
   team1Score: number;
   team2Score: number;
-  /** 1-2 = Team 1 player serving, 3-4 = Team 2 player serving */
   servingPlayer: 1 | 2 | 3 | 4;
-  /**
-   * Traditional doubles service rule: the first serving team starts with only
-   * one server (shown as "server 2"), so they side-out directly instead of
-   * switching to their partner. Cleared on the first side-out.
-   */
   isFirstServe: boolean;
-  /** True when the current server is the second server of this possession; rally loss = side-out */
   isSecondServer: boolean;
   winScore: 11 | 15 | 21;
   startedAt: Date;
   isGameOver: boolean;
   winner: 1 | 2 | null;
   history: Game[];
-  /** Transient message shown after a side-out or server switch */
   flashMessage: string | null;
 }
 
@@ -39,13 +30,14 @@ interface GameActions {
   setScoringMode: (mode: ScoringMode) => void;
   setTeamName: (team: 1 | 2, name: string) => void;
   setPlayerName: (player: 1 | 2 | 3 | 4, name: string) => void;
-  /** Tap who won the rally. In service scoring, tapping the receiving side causes a sideout/server-switch. */
   incrementScore: (player: 1 | 2 | 3 | 4) => void;
   decrementScore: (team: 1 | 2) => void;
   setWinScore: (score: 11 | 15 | 21) => void;
   newGame: () => void;
   clearFlashMessage: () => void;
   loadHistory: () => Promise<void>;
+  swapTeams: () => void;
+  swapPlayers: (team: 1 | 2) => void;
 }
 
 function checkWinner(t1: number, t2: number, winScore: number): 1 | 2 | null {
@@ -55,11 +47,9 @@ function checkWinner(t1: number, t2: number, winScore: number): 1 | 2 | null {
   return null;
 }
 
-
 const FRESH_GAME = {
   team1Score: 0,
   team2Score: 0,
-  // Doubles: right side serves first (even score = right service court)
   servingPlayer: 2 as const,
   isFirstServe: true,
   isSecondServer: false,
@@ -69,8 +59,8 @@ const FRESH_GAME = {
 };
 
 export const useGameStore = create<GameState & GameActions>((set, get) => ({
-  mode: "singles",
-  scoringMode: "rally",
+  mode: "doubles",
+  scoringMode: "service",
   team1Name: "Team 1",
   team2Name: "Team 2",
   playerNames: ["Player 1", "Player 2", "Player 3", "Player 4"],
@@ -102,35 +92,29 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       const servingTeam: 1 | 2 = s.servingPlayer <= 2 ? 1 : 2;
 
       if (tappedTeam !== servingTeam) {
-        // Receiving team won — rotate the serve, no point scored
-
         if (s.mode === "singles") {
           const next: 1 | 2 | 3 | 4 = servingTeam === 1 ? 3 : 1;
           set({ servingPlayer: next, flashMessage: "Side Out!", isFirstServe: false });
           return;
         }
 
-        // Doubles: traditional first-serve rule — skip partner, direct side-out
         if (s.isFirstServe) {
           const next: 1 | 2 | 3 | 4 = servingTeam === 1 ? 3 : 2;
           set({ servingPlayer: next, flashMessage: "Side Out!", isFirstServe: false, isSecondServer: false });
           return;
         }
 
-        // Doubles: second server lost — side-out, new team's right player serves
         if (s.isSecondServer) {
           const next: 1 | 2 | 3 | 4 = servingTeam === 1 ? 3 : 2;
           set({ servingPlayer: next, flashMessage: "Side Out!", isSecondServer: false });
           return;
         }
 
-        // Doubles: first server lost — switch to partner (second server)
         const partner = (s.servingPlayer <= 2 ? 3 - s.servingPlayer : 7 - s.servingPlayer) as 1 | 2 | 3 | 4;
         set({ servingPlayer: partner, flashMessage: "Server 2", isSecondServer: true });
         return;
       }
 
-      // Serving team won — score a point
       const t1 = servingTeam === 1 ? s.team1Score + 1 : s.team1Score;
       const t2 = servingTeam === 2 ? s.team2Score + 1 : s.team2Score;
       const winner = checkWinner(t1, t2, s.winScore);
@@ -153,7 +137,6 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
         });
       }
 
-      // Doubles: server moves to other side after scoring (positions switch)
       const nextServer = s.mode === "doubles"
         ? ((s.servingPlayer <= 2 ? 3 - s.servingPlayer : 7 - s.servingPlayer) as 1 | 2 | 3 | 4)
         : s.servingPlayer;
@@ -162,7 +145,6 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       return;
     }
 
-    // Rally scoring: tapped side scores, tapped player becomes server
     const t1 = tappedTeam === 1 ? s.team1Score + 1 : s.team1Score;
     const t2 = tappedTeam === 2 ? s.team2Score + 1 : s.team2Score;
     const winner = checkWinner(t1, t2, s.winScore);
@@ -202,6 +184,28 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
   newGame: () => set({ ...FRESH_GAME, startedAt: new Date(), flashMessage: null }),
 
   clearFlashMessage: () => set({ flashMessage: null }),
+
+  swapTeams: () => {
+    const s = get();
+    if (s.team1Score !== 0 || s.team2Score !== 0) return;
+    set({
+      team1Name: s.team2Name,
+      team2Name: s.team1Name,
+      playerNames: [s.playerNames[2], s.playerNames[3], s.playerNames[0], s.playerNames[1]],
+    });
+  },
+
+  swapPlayers: (team) => {
+    const s = get();
+    if (s.team1Score !== 0 || s.team2Score !== 0) return;
+    const next = [...s.playerNames] as [string, string, string, string];
+    if (team === 1) {
+      [next[0], next[1]] = [next[1], next[0]];
+    } else {
+      [next[2], next[3]] = [next[3], next[2]];
+    }
+    set({ playerNames: next });
+  },
 
   loadHistory: async () => {
     const games = await db.games.orderBy("playedAt").reverse().limit(50).toArray();

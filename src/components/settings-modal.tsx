@@ -112,7 +112,6 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
         className="bg-slate-800 rounded-t-2xl sm:rounded-2xl w-full sm:max-w-sm border border-slate-600 shadow-2xl max-h-[90dvh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3 shrink-0">
           <h2 className="text-lg font-bold text-white">Settings</h2>
           <button
@@ -133,9 +132,7 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
           </button>
         </div>
 
-        {/* Scrollable content */}
         <div className="overflow-y-auto flex-1 px-5 pb-5 flex flex-col gap-5">
-          {/* Game mode */}
           <ToggleGroup
             label="Game Mode"
             value={mode}
@@ -147,7 +144,6 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
             hint="Switching mode resets the current game."
           />
 
-          {/* Scoring type */}
           <ToggleGroup
             label="Scoring"
             value={scoringMode}
@@ -166,7 +162,6 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
             onChange={setScoringMode}
           />
 
-          {/* Player / team names */}
           {mode === "singles" ? (
             <>
               <TextInput
@@ -227,7 +222,6 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
             </>
           )}
 
-          {/* Win score */}
           <ToggleGroup
             label="Win Score"
             value={String(winScore) as "11" | "15" | "21"}

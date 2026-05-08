@@ -2,19 +2,44 @@
 
 import { useGameStore } from '@/store/game-store';
 
+function SwapVertIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-3.5 h-3.5"
+    >
+      <path d="M7 16V4m0 0L3 8m4-4 4 4" />
+      <path d="M17 8v12m0 0 4-4m-4 4-4-4" />
+    </svg>
+  );
+}
+
 export default function NetStrip() {
   const {
     team1Score,
     team2Score,
+    servingPlayer,
     isFirstServe,
     isSecondServer,
+    isGameOver,
     mode,
     scoringMode,
+    swapTeams,
   } = useGameStore();
 
   const showServerNum = scoringMode === 'service' && mode === 'doubles';
-  // server 2 = either the traditional first-serve rule or the second server of this possession
-  const serverNumDisplay = showServerNum ? (isFirstServe || isSecondServer ? 2 : 1) : null;
+  const serverNumDisplay = showServerNum
+    ? isFirstServe || isSecondServer
+      ? 2
+      : 1
+    : null;
+  const isGameStart =
+    team1Score === 0 && team2Score === 0 && !isGameOver && servingPlayer === 2;
 
   return (
     <div
@@ -44,6 +69,17 @@ export default function NetStrip() {
           </>
         )}
       </div>
+
+      {/* Swap teams button — only at game start */}
+      {isGameStart && (
+        <button
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/15 hover:bg-white/30 border border-white/25 text-white rounded-full p-1.5 transition-colors"
+          onClick={swapTeams}
+          aria-label="Swap teams"
+        >
+          <SwapVertIcon />
+        </button>
+      )}
     </div>
   );
 }

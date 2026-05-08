@@ -33,7 +33,6 @@ function GameRow({ game }: { game: Game }) {
   return (
     <li className="px-4 py-3.5 flex items-start gap-3">
       <div className="flex-1 min-w-0">
-        {/* Mode badge */}
         <span className="text-xs font-semibold uppercase tracking-wide text-slate-600 mr-1.5">
           {game.mode}
         </span>
