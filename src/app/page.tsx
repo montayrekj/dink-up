@@ -191,7 +191,7 @@ export default function Home() {
         )}
       </div>
 
-      <footer className="flex items-center justify-between px-3 py-2 bg-slate-900/95 border-t border-white/10 shrink-0 gap-2">
+      <footer className="flex items-center justify-between px-3 pt-2 bg-slate-900/95 border-t border-white/10 shrink-0 gap-2" style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
         <div className="flex items-center gap-1">
           <span className="text-slate-500 text-xs mr-0.5">Win</span>
           {([11, 15, 21] as const).map((n) => (
