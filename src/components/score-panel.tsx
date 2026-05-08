@@ -2,7 +2,7 @@
 
 import { useGameStore } from "@/store/game-store";
 
-function PickleballIcon({ className }: { className?: string }) {
+export function PickleballIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden>
       <circle cx="12" cy="12" r="11" fill="currentColor" />
@@ -34,15 +34,17 @@ export default function ScorePanel({ team }: ScorePanelProps) {
     team2Name,
     team1Score,
     team2Score,
-    servingTeam,
+    servingPlayer,
     isGameOver,
     incrementScore,
     decrementScore,
   } = useGameStore();
 
+  // In singles, Team 1 maps to player slot 1, Team 2 to player slot 3
+  const playerSlot: 1 | 3 = team === 1 ? 1 : 3;
   const name = team === 1 ? team1Name : team2Name;
   const score = team === 1 ? team1Score : team2Score;
-  const isServing = servingTeam === team;
+  const isServing = team === 1 ? servingPlayer <= 2 : servingPlayer >= 3;
 
   const bgClass =
     team === 1
@@ -54,15 +56,14 @@ export default function ScorePanel({ team }: ScorePanelProps) {
   return (
     <div
       className={`relative flex-1 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${bgClass}`}
-      onClick={() => !isGameOver && incrementScore(team)}
+      onClick={() => !isGameOver && incrementScore(playerSlot)}
       role="button"
       aria-label={`Add point to ${name}`}
       tabIndex={0}
       onKeyDown={(e) =>
-        e.key === "Enter" && !isGameOver && incrementScore(team)
+        e.key === "Enter" && !isGameOver && incrementScore(playerSlot)
       }
     >
-      {/* Serve indicator */}
       <div
         className={`absolute top-3 right-3 transition-opacity duration-200 ${
           isServing ? "opacity-100" : "opacity-0"
@@ -72,19 +73,14 @@ export default function ScorePanel({ team }: ScorePanelProps) {
         <PickleballIcon className={`w-6 h-6 ${ballClass}`} />
       </div>
 
-      {/* Team name */}
-      <p
-        className={`text-xs font-bold uppercase tracking-widest ${nameClass}`}
-      >
+      <p className={`text-xs font-bold uppercase tracking-widest ${nameClass}`}>
         {name}
       </p>
 
-      {/* Score */}
       <span className="text-8xl font-black text-white tabular-nums leading-none">
         {score}
       </span>
 
-      {/* Serving label */}
       <p
         className={`text-xs font-medium transition-opacity duration-200 ${
           isServing ? "opacity-60 text-slate-400" : "opacity-0"
@@ -93,7 +89,6 @@ export default function ScorePanel({ team }: ScorePanelProps) {
         serving
       </p>
 
-      {/* Undo button */}
       <button
         className="absolute bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-slate-700/50 text-slate-500 text-xs font-medium hover:bg-slate-600/60 hover:text-slate-300 active:bg-slate-600/80 transition-colors"
         onClick={(e) => {

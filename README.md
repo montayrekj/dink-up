@@ -1,15 +1,20 @@
-# Dink Up 🏓
+# Dink Up
 
-A mobile-first PWA pickleball scorer. Install it on your phone and keep score hands-free — tap your side of the screen to add a point, tap **undo** to subtract one.
+A mobile-first PWA pickleball scorer. Install it on your phone and keep score hands-free — tap your side of the screen to add a point.
 
 ## Features
 
-- **Split-screen scorer** — each team owns half the screen; tap to score
-- **Rally scoring** — point winner becomes server (indicated by a ball icon)
+- **Singles & doubles** — four-zone court layout for doubles; two-zone for singles
+- **Rally or service scoring** — toggle between rally point and traditional service point (side-out) scoring
+- **Proper doubles server rotation** — tracks server 1 / server 2, the traditional first-serve rule, and position switching after each scored point; ball indicator follows the correct service court
+- **Score display** — shows `team1 – team2` (or `team1 – team2 – serverNum` in doubles service mode); numbers are color-coded by team
+- **Court-inspired design** — blue main court with green kitchen/NVZ zones; thin net line with floating score badge
+- **Per-team undo** — subtract a point from either team without affecting serve state
 - **Configurable win score** — play to 11, 15, or 21 (win by 2 enforced)
-- **Team name editing** — rename teams in Settings before or during a game
-- **Game history** — completed games are saved locally with score, duration, and date
-- **Offline-first PWA** — install to your home screen; works with no network via Serwist service worker + IndexedDB (Dexie)
+- **Player & team names** — rename all four players (doubles) or two teams (singles) in Settings
+- **Flash toasts** — "Side Out!" and "Server 2" notifications on serve changes
+- **Game history** — completed games saved locally with score, duration, mode, and date
+- **Offline-first PWA** — install to home screen; works with no network via Serwist service worker + IndexedDB (Dexie)
 
 ## Tech stack
 
@@ -25,7 +30,7 @@ A mobile-first PWA pickleball scorer. Install it on your phone and keep score ha
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000 (webpack mode)
+npm run dev      # http://localhost:3000
 ```
 
 ## Building for production
@@ -35,13 +40,13 @@ npm run build
 npm run start
 ```
 
-The service worker and precache manifest are generated automatically into `public/sw.js` during the build.
+The service worker and precache manifest are generated into `public/sw.js` during the build.
 
-> **Note:** `dev` and `build` use `--webpack` because Serwist injects a webpack plugin. Turbopack is not yet supported by `@serwist/next`; follow [serwist/serwist#54](https://github.com/serwist/serwist/issues/54) for progress.
+> **Note:** `dev` and `build` use `--webpack` because Serwist injects a webpack plugin incompatible with Turbopack. Follow [serwist/serwist#54](https://github.com/serwist/serwist/issues/54) for Turbopack support.
 
 ## PWA installation
 
-Open the deployed URL in Chrome or Safari on your phone and tap **Add to Home Screen**. The app will launch in standalone mode (no browser chrome) and work fully offline after the first load.
+Open the deployed URL in Chrome or Safari on your phone and tap **Add to Home Screen**. The app launches in standalone mode and works fully offline after the first load.
 
 ## Project structure
 
@@ -49,36 +54,42 @@ Open the deployed URL in Chrome or Safari on your phone and tap **Add to Home Sc
 src/
 ├── app/
 │   ├── layout.tsx          # Root layout with PWA viewport meta
-│   ├── page.tsx            # Main scorer screen
+│   ├── page.tsx            # Main scorer screen (court + header + footer)
 │   ├── manifest.ts         # Web app manifest (Next.js route)
-│   ├── globals.css         # Tailwind v4 imports + base styles
+│   ├── apple-icon.tsx      # iOS apple-touch-icon via ImageResponse
+│   ├── globals.css         # Tailwind v4 imports + flash-toast animation
 │   └── history/
 │       └── page.tsx        # Game history list
 ├── components/
-│   ├── score-panel.tsx     # Tappable score half for one team
+│   ├── tap-zone.tsx        # Tappable court half (handles singles & doubles)
+│   ├── net-strip.tsx       # 1px net line with floating score badge
+│   ├── pickleball-icon.tsx # Serve indicator SVG icon
 │   ├── win-banner.tsx      # Game-over overlay
-│   └── settings-modal.tsx  # Team names + win score settings
+│   └── settings-modal.tsx  # Mode, scoring, names, and win score settings
 ├── lib/
-│   └── db.ts               # Dexie database schema
+│   └── db.ts               # Dexie schema (v3) — games table
 ├── store/
-│   └── game-store.ts       # Zustand game state + scoring logic
+│   └── game-store.ts       # Zustand store: scoring logic, serve rotation, history
 └── sw.ts                   # Serwist service worker entry point
 public/
-├── icon-192.svg            # Manifest icon (replace with PNG for best compatibility)
+├── icon-192.svg            # Manifest icon
 └── icon-512.svg            # Maskable manifest icon
 tsconfig.sw.json            # Separate TS config for the SW file (webworker lib)
 ```
 
-## Replacing icons
-
-The manifest currently references SVG icons. For the best cross-browser PWA experience, generate PNG versions and update `src/app/manifest.ts`:
-
-```bash
-# Example using Inkscape
-inkscape public/icon-192.svg -w 192 -h 192 -o public/icon-192.png
-inkscape public/icon-512.svg -w 512 -h 512 -o public/icon-512.png
-```
-
 ## Scoring rules
 
-The app uses **rally scoring**: any team can score on any rally, and the team that wins the rally serves next. A game is won when a team reaches the win score with at least a 2-point lead.
+### Rally scoring
+Any side can score on any rally. The team that wins the rally scores a point and their tapped player becomes the server. First to reach the win score by 2+ points wins.
+
+### Service scoring (traditional)
+Only the serving team can score. Tapping the receiving side causes a serve rotation with no point awarded.
+
+**Doubles serve rotation:**
+1. Game starts with Team 1's right-side player as "Server 2" (traditional first-serve rule — Team 1 gets only one server to start).
+2. After the first side-out, both teams get two servers per possession.
+3. On each side-out, the incoming team's **right-side player** (from their perspective) serves first as Server 1.
+4. Each time the serving team scores, players switch sides — the server moves to the other court.
+5. When Server 1 loses a rally, Server 2 (their partner) takes over. When Server 2 loses, it's a side-out.
+
+**Singles:** straightforward side-out on any rally loss by the server.

@@ -20,6 +20,61 @@ function formatDate(date: Date) {
   }).format(new Date(date));
 }
 
+function GameRow({ game }: { game: Game }) {
+  const isDoubles = game.mode === "doubles";
+
+  const team1Label = isDoubles
+    ? `${game.playerNames[0]} & ${game.playerNames[1]}`
+    : game.team1Name;
+  const team2Label = isDoubles
+    ? `${game.playerNames[2]} & ${game.playerNames[3]}`
+    : game.team2Name;
+
+  return (
+    <li className="px-4 py-3.5 flex items-start gap-3">
+      <div className="flex-1 min-w-0">
+        {/* Mode badge */}
+        <span className="text-xs font-semibold uppercase tracking-wide text-slate-600 mr-1.5">
+          {game.mode}
+        </span>
+
+        <div className="mt-0.5 flex flex-col gap-0.5">
+          <span
+            className={`font-semibold leading-snug ${
+              game.winner === 1 ? "text-yellow-400" : "text-slate-300"
+            }`}
+          >
+            {game.winner === 1 && "🏆 "}
+            {team1Label}
+          </span>
+          <span className="text-slate-600 text-xs">vs</span>
+          <span
+            className={`font-semibold leading-snug ${
+              game.winner === 2 ? "text-yellow-400" : "text-slate-300"
+            }`}
+          >
+            {game.winner === 2 && "🏆 "}
+            {team2Label}
+          </span>
+        </div>
+
+        <p className="text-slate-500 text-xs mt-1">
+          {formatDate(game.playedAt)} · {formatDuration(game.durationSeconds)}
+        </p>
+      </div>
+
+      <div className="text-right shrink-0 pt-5">
+        <p className="text-xl font-black tabular-nums text-white">
+          {game.team1Score}
+          <span className="text-slate-600 mx-1">–</span>
+          {game.team2Score}
+        </p>
+        <p className="text-xs text-slate-500">to {game.winScore}</p>
+      </div>
+    </li>
+  );
+}
+
 export default function HistoryPage() {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,39 +129,7 @@ export default function HistoryPage() {
         ) : (
           <ul className="divide-y divide-slate-800">
             {games.map((game) => (
-              <li key={game.id} className="px-4 py-3.5 flex items-center gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span
-                      className={`font-semibold ${
-                        game.winner === 1 ? "text-yellow-400" : "text-slate-300"
-                      }`}
-                    >
-                      {game.team1Name}
-                    </span>
-                    <span className="text-slate-600 text-sm">vs</span>
-                    <span
-                      className={`font-semibold ${
-                        game.winner === 2 ? "text-yellow-400" : "text-slate-300"
-                      }`}
-                    >
-                      {game.team2Name}
-                    </span>
-                  </div>
-                  <p className="text-slate-500 text-xs mt-0.5">
-                    {formatDate(game.playedAt)} ·{" "}
-                    {formatDuration(game.durationSeconds)}
-                  </p>
-                </div>
-                <div className="text-right shrink-0">
-                  <p className="text-lg font-black tabular-nums text-white">
-                    {game.team1Score}
-                    <span className="text-slate-600 mx-1">–</span>
-                    {game.team2Score}
-                  </p>
-                  <p className="text-xs text-slate-500">to {game.winScore}</p>
-                </div>
-              </li>
+              <GameRow key={game.id} game={game} />
             ))}
           </ul>
         )}
