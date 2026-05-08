@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(mkdir -p /Users/king-work/Documents/Personal/dink-up/src/components /Users/king-work/Documents/Personal/dink-up/src/lib /Users/king-work/Documents/Personal/dink-up/src/store /Users/king-work/Documents/Personal/dink-up/src/app/history)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)"
+    ],
+    "additionalDirectories": [
+      "/Users/king-work/Documents/Personal/dink-up/src"
+    ]
+  }
+}
