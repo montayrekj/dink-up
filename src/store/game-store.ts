@@ -137,11 +137,20 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
         });
       }
 
-      const nextServer = s.mode === "doubles"
-        ? ((s.servingPlayer <= 2 ? 3 - s.servingPlayer : 7 - s.servingPlayer) as 1 | 2 | 3 | 4)
-        : s.servingPlayer;
+      let nextServer = s.servingPlayer;
+      let nextPlayerNames = s.playerNames;
 
-      set({ team1Score: t1, team2Score: t2, servingPlayer: nextServer, isGameOver: !!winner, winner });
+      if (s.mode === "doubles") {
+        nextServer = (s.servingPlayer <= 2 ? 3 - s.servingPlayer : 7 - s.servingPlayer) as 1 | 2 | 3 | 4;
+        nextPlayerNames = [...s.playerNames] as [string, string, string, string];
+        if (servingTeam === 1) {
+          [nextPlayerNames[0], nextPlayerNames[1]] = [nextPlayerNames[1], nextPlayerNames[0]];
+        } else {
+          [nextPlayerNames[2], nextPlayerNames[3]] = [nextPlayerNames[3], nextPlayerNames[2]];
+        }
+      }
+
+      set({ team1Score: t1, team2Score: t2, servingPlayer: nextServer, playerNames: nextPlayerNames, isGameOver: !!winner, winner });
       return;
     }
 

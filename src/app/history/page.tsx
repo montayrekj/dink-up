@@ -170,7 +170,7 @@ export default function HistoryPage() {
 
   return (
     <main className="h-full flex flex-col bg-slate-900 text-white overflow-hidden">
-      <header className="flex items-center gap-2 px-3 py-3 bg-slate-800 border-b border-slate-700 shrink-0">
+      <header className="flex items-center gap-2 px-3 pb-3 bg-slate-800 border-b border-slate-700 shrink-0" style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}>
         <Link
           href="/"
           className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"

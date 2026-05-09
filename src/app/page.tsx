@@ -111,7 +111,7 @@ export default function Home() {
 
   return (
     <main className="h-full flex flex-col relative overflow-hidden bg-[#07101e]">
-      <header className="flex items-center justify-between px-3 py-2 bg-slate-900/95 border-b border-white/10 shrink-0">
+      <header className="flex items-center justify-between px-3 pb-2 bg-slate-900/95 border-b border-white/10 shrink-0" style={{ paddingTop: 'max(0.5rem, env(safe-area-inset-top))' }}>
         <button
           onClick={() => setShowSettings(true)}
           className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
