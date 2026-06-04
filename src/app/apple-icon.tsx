@@ -29,25 +29,21 @@ export default function AppleIcon() {
             justifyContent: "center",
           }}
         >
-          {/* Pickleball curve lines */}
+          {/* Pickleball holes */}
           <svg
             viewBox="0 0 130 130"
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
           >
-            <path
-              d="M65 5 Q40 35 65 65 Q90 95 65 125"
-              stroke="rgba(0,0,0,0.2)"
-              strokeWidth="8"
-              fill="none"
-              strokeLinecap="round"
-            />
-            <path
-              d="M5 65 Q35 40 65 65 Q95 90 125 65"
-              stroke="rgba(0,0,0,0.2)"
-              strokeWidth="8"
-              fill="none"
-              strokeLinecap="round"
-            />
+            <circle cx="47" cy="30" r="6" fill="rgba(0,0,0,0.2)" />
+            <circle cx="83" cy="30" r="6" fill="rgba(0,0,0,0.2)" />
+            <circle cx="27" cy="53" r="6" fill="rgba(0,0,0,0.2)" />
+            <circle cx="65" cy="50" r="6" fill="rgba(0,0,0,0.2)" />
+            <circle cx="103" cy="53" r="6" fill="rgba(0,0,0,0.2)" />
+            <circle cx="30" cy="80" r="6" fill="rgba(0,0,0,0.2)" />
+            <circle cx="65" cy="80" r="6" fill="rgba(0,0,0,0.2)" />
+            <circle cx="101" cy="80" r="6" fill="rgba(0,0,0,0.2)" />
+            <circle cx="47" cy="101" r="6" fill="rgba(0,0,0,0.2)" />
+            <circle cx="83" cy="101" r="6" fill="rgba(0,0,0,0.2)" />
           </svg>
         </div>
       </div>

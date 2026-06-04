@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useGameStore } from "@/store/game-store";
-import { PickleballIcon } from "./score-panel";
+import { useGameStore } from '@/store/game-store';
+import { PickleballIcon } from './score-panel';
 
 interface PlayerCellProps {
   player: 1 | 2 | 3 | 4;
@@ -9,7 +9,10 @@ interface PlayerCellProps {
   isBottom?: boolean;
 }
 
-export default function PlayerCell({ player, isBottom = false }: PlayerCellProps) {
+export default function PlayerCell({
+  player,
+  isBottom = false,
+}: PlayerCellProps) {
   const {
     playerNames,
     team1Score,
@@ -27,18 +30,17 @@ export default function PlayerCell({ player, isBottom = false }: PlayerCellProps
 
   const bgClass =
     team === 1
-      ? "bg-blue-950 active:bg-blue-900"
-      : "bg-green-950 active:bg-green-900";
-  const nameClass = team === 1 ? "text-blue-400" : "text-green-400";
-  const ballClass = team === 1 ? "text-blue-300" : "text-green-300";
+      ? 'bg-blue-950 active:bg-blue-900'
+      : 'bg-green-950 active:bg-green-900';
+  const nameClass = team === 1 ? 'text-blue-400' : 'text-green-400';
+  const ballClass = team === 1 ? 'text-blue-300' : 'text-green-300';
 
-  // Divider borders: vertical split always on left col, horizontal split only on top row
   const borderClass = [
-    !isBottom && "border-b border-slate-700",
-    (player === 1 || player === 2) && "border-r border-slate-700",
+    !isBottom && 'border-b border-slate-700',
+    (player === 1 || player === 2) && 'border-r border-slate-700',
   ]
     .filter(Boolean)
-    .join(" ");
+    .join(' ');
 
   return (
     <div
@@ -48,13 +50,13 @@ export default function PlayerCell({ player, isBottom = false }: PlayerCellProps
       aria-label={`Add point for ${name}`}
       tabIndex={0}
       onKeyDown={(e) =>
-        e.key === "Enter" && !isGameOver && incrementScore(player)
+        e.key === 'Enter' && !isGameOver && incrementScore(player)
       }
     >
       {/* Serve indicator */}
       <div
         className={`absolute top-2 right-2 transition-opacity duration-200 ${
-          isServing ? "opacity-100" : "opacity-0"
+          isServing ? 'opacity-100' : 'opacity-0'
         }`}
         aria-hidden
       >
@@ -74,7 +76,7 @@ export default function PlayerCell({ player, isBottom = false }: PlayerCellProps
       {/* "serving" label */}
       <p
         className={`text-xs text-slate-500 transition-opacity duration-200 ${
-          isServing ? "opacity-100" : "opacity-0"
+          isServing ? 'opacity-100' : 'opacity-0'
         }`}
       >
         serving

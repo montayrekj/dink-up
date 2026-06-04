@@ -1,25 +1,21 @@
-"use client";
+'use client';
 
-import { useGameStore } from "@/store/game-store";
+import { useGameStore } from '@/store/game-store';
 
 export function PickleballIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden>
       <circle cx="12" cy="12" r="11" fill="currentColor" />
-      <path
-        d="M12 1 Q7 6 12 12 Q17 18 12 23"
-        stroke="rgba(0,0,0,0.25)"
-        strokeWidth="2.5"
-        fill="none"
-        strokeLinecap="round"
-      />
-      <path
-        d="M1 12 Q6 7 12 12 Q18 17 23 12"
-        stroke="rgba(0,0,0,0.25)"
-        strokeWidth="2.5"
-        fill="none"
-        strokeLinecap="round"
-      />
+      <circle cx="9" cy="6" r="1" fill="rgba(0,0,0,0.25)" />
+      <circle cx="15" cy="6" r="1" fill="rgba(0,0,0,0.25)" />
+      <circle cx="5.5" cy="10" r="1" fill="rgba(0,0,0,0.25)" />
+      <circle cx="12" cy="9.5" r="1" fill="rgba(0,0,0,0.25)" />
+      <circle cx="18.5" cy="10" r="1" fill="rgba(0,0,0,0.25)" />
+      <circle cx="6" cy="14.5" r="1" fill="rgba(0,0,0,0.25)" />
+      <circle cx="12" cy="14.5" r="1" fill="rgba(0,0,0,0.25)" />
+      <circle cx="18" cy="14.5" r="1" fill="rgba(0,0,0,0.25)" />
+      <circle cx="9" cy="18" r="1" fill="rgba(0,0,0,0.25)" />
+      <circle cx="15" cy="18" r="1" fill="rgba(0,0,0,0.25)" />
     </svg>
   );
 }
@@ -40,7 +36,6 @@ export default function ScorePanel({ team }: ScorePanelProps) {
     decrementScore,
   } = useGameStore();
 
-  // In singles, Team 1 maps to player slot 1, Team 2 to player slot 3
   const playerSlot: 1 | 3 = team === 1 ? 1 : 3;
   const name = team === 1 ? team1Name : team2Name;
   const score = team === 1 ? team1Score : team2Score;
@@ -48,10 +43,10 @@ export default function ScorePanel({ team }: ScorePanelProps) {
 
   const bgClass =
     team === 1
-      ? "bg-blue-950 active:bg-blue-900"
-      : "bg-green-950 active:bg-green-900";
-  const nameClass = team === 1 ? "text-blue-400" : "text-green-400";
-  const ballClass = team === 1 ? "text-blue-300" : "text-green-300";
+      ? 'bg-blue-950 active:bg-blue-900'
+      : 'bg-green-950 active:bg-green-900';
+  const nameClass = team === 1 ? 'text-blue-400' : 'text-green-400';
+  const ballClass = team === 1 ? 'text-blue-300' : 'text-green-300';
 
   return (
     <div
@@ -61,12 +56,12 @@ export default function ScorePanel({ team }: ScorePanelProps) {
       aria-label={`Add point to ${name}`}
       tabIndex={0}
       onKeyDown={(e) =>
-        e.key === "Enter" && !isGameOver && incrementScore(playerSlot)
+        e.key === 'Enter' && !isGameOver && incrementScore(playerSlot)
       }
     >
       <div
         className={`absolute top-3 right-3 transition-opacity duration-200 ${
-          isServing ? "opacity-100" : "opacity-0"
+          isServing ? 'opacity-100' : 'opacity-0'
         }`}
         aria-hidden
       >
@@ -83,7 +78,7 @@ export default function ScorePanel({ team }: ScorePanelProps) {
 
       <p
         className={`text-xs font-medium transition-opacity duration-200 ${
-          isServing ? "opacity-60 text-slate-400" : "opacity-0"
+          isServing ? 'opacity-60 text-slate-400' : 'opacity-0'
         }`}
       >
         serving

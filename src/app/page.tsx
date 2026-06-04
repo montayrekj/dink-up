@@ -2,11 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useGameStore } from '@/store/game-store';
 import TapZone from '@/components/tap-zone';
 import NetStrip from '@/components/net-strip';
 import WinBanner from '@/components/win-banner';
 import SettingsModal from '@/components/settings-modal';
+
+const SplashScreen = dynamic(() => import('@/components/splash-screen'));
 
 function SettingsIcon() {
   return (
@@ -90,6 +93,17 @@ export default function Home() {
 
   const isGameStart =
     team1Score === 0 && team2Score === 0 && !isGameOver && servingPlayer === 2;
+
+  const [showSplash, setShowSplash] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    setShowSplash(!localStorage.getItem('dinkup_splash_shown'));
+  }, []);
+
+  function handleSplashDone() {
+    localStorage.setItem('dinkup_splash_shown', '1');
+    setShowSplash(false);
+  }
 
   const [showSettings, setShowSettings] = useState(false);
   const [toast, setToast] = useState<{ msg: string; key: number } | null>(null);
@@ -237,6 +251,8 @@ export default function Home() {
       {toast && <FlashToast key={toast.key} message={toast.msg} />}
       {isGameOver && <WinBanner />}
       {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+      {showSplash === null && <div className="fixed inset-0 bg-[#07101e] z-50" />}
+      {showSplash === true && <SplashScreen onDone={handleSplashDone} />}
     </main>
   );
 }
